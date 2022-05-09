@@ -1,9 +1,12 @@
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MvcDynamoAWS.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +26,16 @@ namespace MvcDynamoAWS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            /*importante inyectar el servicio*/
+            //services.AddTransient<ServiceDynamoDB>();
+
+            AmazonDynamoDBClient client = new AmazonDynamoDBClient();
+            DynamoDBContext context = new DynamoDBContext(client);
+            services.AddTransient<DynamoDBContext>(x => context);
+            services.AddTransient<ServiceDynamoDB>();
+            services.AddControllersWithViews();
+
+
             services.AddControllersWithViews();
         }
 

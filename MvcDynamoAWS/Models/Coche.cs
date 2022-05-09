@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MvcDynamoAWS.Models
 {
-    [DynamoDBTable("coches")]
+    [DynamoDBTable("coches2")]
     public class Coche
     {
         [DynamoDBHashKey]
@@ -18,5 +18,8 @@ namespace MvcDynamoAWS.Models
         public string Modelo { get; set; }
         [DynamoDBProperty("velocidad")]
         public int Velocidad { get; set; }
+
+        [DynamoDBProperty("motor")]
+        public Motor Motor { get; set; }
     }
 }

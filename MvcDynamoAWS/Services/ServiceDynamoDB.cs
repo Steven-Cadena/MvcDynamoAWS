@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using MvcDynamoAWS.Models;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,11 @@ namespace MvcDynamoAWS.Services
     public class ServiceDynamoDB
     {
         private DynamoDBContext context;
-        public ServiceDynamoDB() 
+        public ServiceDynamoDB(DynamoDBContext context) 
         {
             //A PARTIR DE UN CLIENTE DYNAMODB SE CREA UN CONTEXT
-            AmazonDynamoDBClient client = new AmazonDynamoDBClient();
-            this.context = new DynamoDBContext(client);
+            //AmazonDynamoDBClient client = new AmazonDynamoDBClient();
+            this.context = context;
         }
         //metodo asincrono
         public async Task CreateCocheAsync(Coche car) 
@@ -35,6 +36,29 @@ namespace MvcDynamoAWS.Services
             return await this.context.LoadAsync<Coche>(idCoche);
         }
 
+        public async Task<List<Coche>> GetCochesAsync() 
+        {
+            //LO PRIMERO ES RECUPERAR LA TABLA DE LOS OBJETOS 
+            var tabla = this.context.GetTargetTable<Coche>();
+            //PARA RECUPERAR TODOS O PARA BUSCAR, DEBEMOS INDICARLOS 
+            //CON UN OBJETO ScanOptions
+            var scanOptions = new ScanOperationConfig();
+            var results = tabla.Scan(scanOptions);
+            //LO QUE DEVUELVE EN EL MOMENTO DE BUSCAR SON OBJETOS DE LA CLASE 
+            //Document
+            List<Document> data = await results.GetNextSetAsync();
+            //DEBEMOS CONVERTIR LOS OBJETOS Document A NUESTRO TIPO
+            var cars = this.context.FromDocuments<Coche>(data);
+            return cars.ToList();
+        }
 
+        public async Task<List<Coche>> SearchCochesAsync(string query) 
+        {
+            List<ScanCondition> conditions = new List<ScanCondition>();
+            conditions.Add(new ScanCondition("Marca", ScanOperator.Equal, query));
+            var cars =
+                await this.context.ScanAsync<Coche>(conditions, null).GetRemainingAsync();
+            return cars.ToList();
+        }
     }
 }

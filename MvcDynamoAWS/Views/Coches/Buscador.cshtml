@@ -1,0 +1,66 @@
+﻿@model List<Coche>
+
+
+<form method="post">
+    <label> Introduzca marca:</label>
+    <input type="text" name="query"/>
+    <button class="btn btn-success">
+        Buscar
+    </button>
+</form>
+@if (Model != null)
+{
+    <h1>Resultado de la busqueda</h1>
+    <table class="table table-dark">
+        <thead>
+            <tr>
+                <th>
+                    IdCoche
+                </th>
+                <th>
+                    Marca
+                </th>
+                <th>
+                    Modelo
+                </th>
+                <th>
+                    Velocidad
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Coche car in Model)
+            {
+                <tr>
+                    <td>
+                        @car.IdCoche)
+                    </td>
+                    <td>
+                        @car.Marca)
+                    </td>
+                    <td>
+                        @car.Modelo)
+                    </td>
+                    <td>
+                        @car.Velocidad)
+                    </td>
+                    <td>
+                        <a asp-controller="Coches"
+                           asp-action="Details"
+                           asp-route-id="@car.IdCoche"
+                           class="btn btn-info">
+                            Details
+                        </a>
+                        <a asp-controller="Coches"
+                           asp-action="Delete"
+                           asp-route-id="@car.IdCoche"
+                           class="btn btn-danger">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
